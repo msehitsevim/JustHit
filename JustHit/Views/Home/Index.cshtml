@@ -1,0 +1,143 @@
+﻿@model JustHit.Models.IndexModel
+
+
+
+<form id="MainFormId">
+
+
+        
+    <div class="row">
+        <div class="col-sm-6 text-sm-center">
+            <label>@Model.IndexProfile.PlayerName</label>
+        </div>
+        
+        
+        <div class="col-sm-6 text-sm-center">
+            <label>@Model.IndexBotProfile.Name</label>
+       </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 text-sm-center">
+            <text id="LblPlayerHealth" data-ph="100">100</text>
+        </div>
+        <div class="col-sm-6 text-sm-center">
+            <text id="LblBotHealth" data-bh="100">100</text>
+        </div>
+    </div>
+    <div class="row">
+     <div class="col-sm-4"></div>
+     <div class="col-sm-4 text-sm-center">
+         <text id="pdTaken" data-sph="0" class="text-danger">0</text>
+                 <button type="button" id="Attack">Attack</button>
+                 <button type="button" id="Spell">Spell</button>
+      
+         <text id="bdTaken" data-sbh="0" class="text-danger">0</text>
+     </div>
+      <div class="col-sm-4"></div>
+    </div>
+   
+    <div>
+        <span class="float-right">
+            <input type="hidden" value="@Model.IndexProfile.PlayerId" asp-for="@Model.IndexProfile.PlayerId" id="Player" />
+            <input type="hidden" value="@Model.IndexProfile.Damage" asp-for="@Model.IndexProfile.Damage" id="PlayerDamage" />
+            <input type="hidden" value="@Model.IndexProfile.Armor" asp-for="@Model.IndexProfile.Armor" id="PlayerArmor" />
+            <input type="hidden" value="@Model.IndexProfile.SpellDamage" asp-for="@Model.IndexProfile.SpellDamage" id="PlayerSpell" />
+            <input type="hidden" value="@Model.IndexProfile.Health" asp-for="@Model.IndexProfile.Health" id="PlayerHealth" />
+            <input type="hidden" value="@Model.IndexBotProfile.BotId" asp-for="@Model.IndexBotProfile.BotId" id="BotId" />
+            <input type="hidden" value="@Model.IndexBotProfile.Damage" asp-for="@Model.IndexBotProfile.Damage" id="BotDamage" />
+            <input type="hidden" value="@Model.IndexBotProfile.Armor" asp-for="@Model.IndexBotProfile.Armor" id="BotArmor" />
+            <input type="hidden" value="@Model.IndexBotProfile.SpellDamage" asp-for="@Model.IndexBotProfile.SpellDamage" id="BotSpell" />
+            <input type="hidden" value="@Model.IndexBotProfile.Health" asp-for="@Model.IndexBotProfile.Health" id="BotHealth" />
+
+        </span>
+
+    </div>
+</form>
+
+<environment include="Development">
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+</environment>
+<script type="text/javascript">
+    var turn = 0;
+    var damage = 0;
+    var bDamage = 0;
+    var CountSpell = 0;
+    $(document).ready(function () {
+
+
+        $('#Attack').click(function (e) {
+            e.preventDefault();
+            if ($("#LblPlayerHealth").html() <= 0 && $("#LblBotHealth").html() >= 0) {
+                alert("You Lose !!! ");
+                  setTimeout(function () {
+                   window.location.href = window.location.origin + "/Login/Index";
+                  }, 500);
+            } else if ($("#LblBotHealth").html() <= 0 && $("#LblPlayerHealth").html() >= 0) {
+                alert("You Win !!! ");
+                  setTimeout(function () {
+                         window.location.href = window.location.origin + "/Login/Index";
+                  }, 500);
+            } else if ($("#LblPlayerHealth").html() == 0 && $("#LblBotHealth").html() == 0) {
+                    alert("Everyone Dead !?! ");
+                  setTimeout(function () {
+                        window.location.href = window.location.origin + "/Login/Index";
+                  }, 500);
+            }else {
+                turn++;
+                damage = $("#PlayerDamage").val() - parseInt(($("#PlayerDamage").val() * (document.getElementById("BotArmor").value) / 100));
+
+                var botLife = $("#LblBotHealth").data("bh");
+                $("#LblBotHealth").data("bh", (botLife - damage));
+                $("#LblBotHealth").html($("#LblBotHealth").data("bh"));
+                $("#bdTaken").html("-"+damage);
+
+                BDamage = $("#BotDamage").val() - parseInt(($("#BotDamage").val() * (document.getElementById("PlayerArmor").value) / 100));
+
+                var playerLife = $("#LblPlayerHealth").data("ph");
+                $("#LblPlayerHealth").data("ph", (playerLife - BDamage));
+                $("#LblPlayerHealth").html($("#LblPlayerHealth").data("ph"));
+                $("#pdTaken").html("-" + BDamage);
+            }
+            if ((turn % 3) == 0) {
+                CountSpell++;
+            }
+        });
+
+        $("#Spell").on('click', function (e) {
+             e.preventDefault();
+            if ($("#LblBotHealth").html() <= 0 && $("#LblPlayerHealth").html() >= 0) {
+                alert("You Win !!! ");
+                  setTimeout(function () {
+                           window.location.href = window.location.origin + "/Login/Index";
+                     }, 500);
+            } else  if ($("#LblPlayerHealth").html() <= 0 && $("#LblBotHealth").html() >= 0) {
+                alert("You Lose !!! ");
+                  setTimeout(function () {
+                      window.location.href = window.location.origin + "/Login/Index";
+                  }, 500);
+            } else if ($("#LblPlayerHealth").html() == 0 && $("#LblBotHealth").html() == 0) {
+                    alert("Everyone Dead !?! ");
+                  setTimeout(function () {
+                     window.location.href = window.location.origin + "/Login/Index";
+                  }, 500);
+            }
+                else {
+                         if (CountSpell >= 0 ) {
+                              CountSpell--;
+                              damage = $("#PlayerSpell").val() - parseInt(($("#PlayerSpell").val() * (document.getElementById("BotArmor").value) / 100));
+                              var botLife = $("#LblBotHealth").data("bh");
+                              $("#LblBotHealth").data("bh", (botLife - damage));
+                              $("#LblBotHealth").html($("#LblBotHealth").data("bh"));
+                              $("#bdTaken").html("-" + damage);
+
+                              BDamage = $("#BotSpell").val() - parseInt(($("#BotSpell").val() * (document.getElementById("PlayerArmor").value) / 100));
+                              var playerLife = $("#LblPlayerHealth").data("ph");
+                              $("#LblPlayerHealth").data("ph", (playerLife - BDamage));
+                              $("#LblPlayerHealth").html($("#LblPlayerHealth").data("ph"));
+                              $("#pdTaken").html("-"+BDamage);
+                         } else alert("3 turda 1 kez vurabilirsiniz");
+                   }
+            });
+    });
+</script>

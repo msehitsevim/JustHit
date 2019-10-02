@@ -1,0 +1,12 @@
+﻿@model JustHit.Models.Player
+
+
+
+@using (Html.BeginForm("AddRecord", "Login", FormMethod.Post))
+{
+    <div>
+        <input asp-for="PlayerName" class="form-control" id="PlayerName" placeholder="PlayerName" />
+        <span asp-validation-for="PlayerName" class="text-danger"></span>
+        <button type="submit">Add User</button>
+    </div>
+}
